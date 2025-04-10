@@ -1,16 +1,17 @@
+// server/vite.ts - FIXED
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
 import { createServer as createViteServer, createLogger } from "vite";
+import type { InlineConfig, ViteDevServer } from "vite"; // Import correct types
+import { fileURLToPath } from "url";
+import { nanoid } from "nanoid";
 import { type Server } from "http";
 import viteConfig from "../vite.config";
-import { nanoid } from "nanoid";
-// Import our custom __dirname from the helper module
-import { __dirname } from "../utils/pathHelper";
 
 const viteLogger = createLogger();
 
-export function log(message: string, source = "express") {
+export function log(message: string, source = "express"): void {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
@@ -20,14 +21,18 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
-export async function setupVite(app: Express, server: Server) {
-  const serverOptions = {
+export async function setupVite(app: Express, server: Server): Promise<void> {
+  // Get current file path and directory
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  const serverOptions: InlineConfig["server"] = {
     middlewareMode: true,
     hmr: { server },
     allowedHosts: true,
   };
 
-  const vite = await createViteServer({
+  const vite: ViteDevServer = await createViteServer({
     ...viteConfig,
     configFile: false,
     customLogger: {
@@ -47,7 +52,7 @@ export async function setupVite(app: Express, server: Server) {
 
     try {
       const clientTemplate = path.resolve(
-        __dirname, // <-- use our custom __dirname
+        __dirname, // Using the calculated __dirname
         "..",
         "client",
         "index.html",
@@ -68,9 +73,13 @@ export async function setupVite(app: Express, server: Server) {
   });
 }
 
-export function serveStatic(app: Express) {
+export function serveStatic(app: Express): void {
+  // Get current file path and directory
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
   const distPath = path.resolve(
-    __dirname, // <-- use our custom __dirname here as well
+    __dirname, // Using the calculated __dirname
     "..",
     "dist",
     "public",
