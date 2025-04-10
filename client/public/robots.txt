@@ -1,0 +1,12 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://roastmyresume.cc/sitemap.xml
+
+# Don't crawl results pages as they are dynamic
+Disallow: /results
+
+# Rate limiting
+Crawl-delay: 10 
