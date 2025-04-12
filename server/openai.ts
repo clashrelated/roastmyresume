@@ -74,7 +74,6 @@ Here's the resume: ${resumeText}`;
       model: "gpt-4",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 800,
-      response_format: { type: "json_object" },
     });
 
     const content =
